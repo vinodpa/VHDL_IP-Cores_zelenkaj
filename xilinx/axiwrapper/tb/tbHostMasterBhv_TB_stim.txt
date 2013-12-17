@@ -1,0 +1,135 @@
+#status control register tb
+# AP
+##MY Test Codes
+WR d 7c000000 DEADBEEF
+WR d 7c000004 DEADBEEF
+WR d 7c000008 DEADBEEF
+WR d 7c00000C DEADBEEF
+WR d 7c000010 DEADBEEF
+WR d 7c000014 DEADBEEF
+WR d 7c000018 DEADBEEF
+WR d 7c00001C DEADBEEF
+WR d 7c000020 DEADBEEF
+WR d 7c000024 DEADBEEF
+#check magic
+ASS d 7c000000 504C4B00
+#read version
+ASS d 7c000004 FFFFFF00
+#check node id for F0
+ASS b 7c00020C 000000F0
+#set led
+WR w 7c000210 00000001
+#do some invalid access
+WR d 7c008000 DEADC0DE
+
+WR w 7c008000 DEADDEAD
+ASS d 7c008000 00000000
+ASS w 7c008000 00000000
+#write command
+WR w 7c000204 00000001
+
+###############################################
+#PCP is setting Addresses - Host Has to wait Here
+WAIT w 7c000206 00000001
+###############################################
+NOP
+#set led
+WR w 7c000210 xxxx0002
+#set dyn buf 0 base
+WR  d 7c000400 30001000
+ASS d 7c000400 30001000
+#set dyn buf 1 base
+WR  d 7c000404 30002000
+ASS d 7c000404 30002000
+#write to 0800
+WR  d 7c000800 08001234
+#write to 1000
+WR  d 7c001000 10001234
+#write to 1800
+WR  d 7c001800 18001234
+#write to 2800
+WR  d 7c002800 28001234
+#write to 3800
+WR  d 7c003800 38001234
+#write to 4800
+WR  d 7c004800 48001234
+#write to 5800
+WR  d 7c005800 58001234
+#write to 6800
+WR  d 7c006800 68001234
+#write to 7000
+WR  d 7c007000 70001234
+#write to 9000
+WR  d 7c009000 90001234
+#write to B000
+WR  d 7c00B000 B0001234
+#write to E000
+WR  d 7c00E000 E0001234
+#read from 0800
+ASS d 7c000800 08001234
+#read from 1000
+ASS d 7c001000 10001234
+#read from 1800
+ASS d 7c001800 18001234
+#ASS d 7c001800 A0C00FEE
+#read from 2800
+ASS d 7c002800 28001234
+#read from 3800
+ASS d 7c003800 38001234
+#read from 4800
+ASS d 7c004800 48001234
+#read from 5800
+ASS d 7c005800 58001234
+#read from 6800
+ASS d 7c006800 68001234
+#read from 7000
+ASS d 7c007000 70001234
+#read from 9000
+ASS d 7c009000 90001234
+#read from B000
+ASS d 7c00B000 B0001234
+#read from E000
+ASS d 7c00E000 E0001234
+#########################RESRV###################
+#write to reserved
+WR  d 7c014000 14141234
+#read from reserved
+RD  d 7c014000
+################################################
+#ack all irqs
+WR  w 7c000306 0000000F
+#enable irq
+WR  w 7c000300 0000000F
+WR  w 7c000304 00000001
+#write command
+WR  w 7c000204 00000002
+
+################################################
+#wait for state
+WAIT w 7c000206 00000002
+#################################################
+#################################################
+#TODO: Interrupts
+#################################################
+#wait for irq
+#WAIT w 7c000302 00000003
+#ack irqs
+WR w 7c000306 0000000F
+
+#wait for sync irq only
+#WAIT w 7c000302 00000001
+#ack irq
+#WR w 7c000306 0000000F
+
+#disable irq
+#WR w 7c000300 00000000
+#WR w 7c000304 00000000
+
+#write command
+WR w 7c000204 00000003
+###############################################
+#wait for state
+#WAIT w 7c000206 00000003
+######################TEST ENDS HERE############
+NOP
+FIN
