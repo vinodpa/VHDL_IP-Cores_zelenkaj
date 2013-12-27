@@ -207,6 +207,8 @@ begin
             oReaddata <= vTmp;
 
             if iWrite = cActivated then
+               -- Read the data to ensure all byte operations will not affect other data in memory
+               readFile(iAddress, vTmp);
                 for i in iByteenable'range loop
                     if iByteenable(i) = cActivated then
                         vTmp((i+1)*cByte-1 downto i*cByte) :=
