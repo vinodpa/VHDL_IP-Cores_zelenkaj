@@ -28,12 +28,12 @@ common/hostinterface/src/dynamicBridgeRtl.vhd \
 common/hostinterface/src/irqGenRtl.vhd \
 common/hostinterface/src/statusControlRegRtl.vhd \
 common/hostinterface/src/hostInterfaceRtl.vhd \
-common/hostinterface/src/parallelInterfaceRtl.vhd vhdl \
+common/hostinterface/src/parallelInterfaceRtl.vhd \
 xilinx/lib/src/dpRam-rtl-a.vhd \
-xilinx/library/pcores/axi_hostinterface_vX_YY_Z/hdl/vhdl/axi_hostinterface.vhd \
 xilinx/axiwrapper/src/axi_lite_master_wrapperRtl.vhd \
 xilinx/axiwrapper/src/axi_lite_slave_wrapperRtl.vhd \
 xilinx/axiwrapper/tb/axi_protocol_checker.vhd \
+xilinx/library/pcores/axi_hostinterface_vX_YY_Z/hdl/vhdl/axi_hostinterface.vhd \
 xilinx/axiwrapper/tb/tb_axi_hostinterface_ip.vhd \
 "
 
