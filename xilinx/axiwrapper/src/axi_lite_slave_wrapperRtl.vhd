@@ -134,8 +134,12 @@ signal readStart  : std_logic ;
 signal avalonDataValid : std_logic ;
 signal AvsWaitrequest_d : std_logic ;
 
+signal read_sel : std_logic;
+signal write_sel : std_logic;
+
 begin
 
+-- TODO: Check weather we need to add clock sync to make sure data & control signal crossing should be in same clock domains
 
 --Avalon Slave Interface Singals
 oAvsAddress      <=  address             ;
@@ -188,9 +192,13 @@ S_AXI_BRESP      <=   "00"        ;   --always OK
 S_AXI_RRESP      <=   "00"        ;   --always ok
 
 -- Address Decoder
-chip_sel <= '1' when ( (S_AXI_AWADDR >=  C_BASEADDR ) and
+chip_sel <= read_sel or write_sel ;
+
+write_sel <= '1' when ( (S_AXI_AWADDR >=  C_BASEADDR ) and
                        (S_AXI_AWADDR <= C_HIGHADDR)) else
-            '1' when ( (S_AXI_ARADDR >=  C_BASEADDR ) and
+             '0' ;
+
+read_sel <= '1' when ( (S_AXI_ARADDR >=  C_BASEADDR ) and
                        (S_AXI_ARADDR <= C_HIGHADDR)) else
             '0' ;
 
@@ -203,10 +211,14 @@ writeStart <= chip_sel and S_AXI_AWVALID ;
 --writeDone
 readStart  <= chip_sel and S_AXI_ARVALID ;
 --readDone
-axiDataValid <= chip_sel and S_AXI_WVALID ;
+axiDataValid <= S_AXI_WVALID ;
 
-byte_enable <= S_AXI_WSTRB when ((chip_sel and S_AXI_AWVALID) = '1' ) else
-               x"F" when ((chip_sel and S_AXI_ARVALID) = '1' ) else
+--byte_enable <= S_AXI_WSTRB when ((chip_sel and S_AXI_AWVALID) = '1' ) else
+--               x"F"        when ((chip_sel and S_AXI_ARVALID) = '1' ) else
+--               byte_enable ;
+
+byte_enable <= x"F"  when (readStart = '1'  and (StateCurrent = sIDLE)) else
+               S_AXI_WSTRB when (writeStart = '1' and (StateCurrent = sIDLE)) else
                byte_enable ;
 
 

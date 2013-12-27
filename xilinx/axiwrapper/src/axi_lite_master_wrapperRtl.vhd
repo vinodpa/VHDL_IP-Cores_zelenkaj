@@ -129,6 +129,10 @@ begin
 --                x"6" when StateCurrent  = sWRITE_DONE else
 --                x"7" when StateCurrent  = sREAD_DONE else
 --                x"F" ;
+--
+
+
+--TODO: Check weather we need to add clock sync circuits to make sure clock crossing domain are in Sync
 --AXI Master Operations
 
     M_AXI_AWPROT    <= "000"   ;
@@ -214,7 +218,6 @@ begin
          when sINIT =>
             if (iAvalonRead = '1') then
                 StateNext   <= sARVALID ;
-                --Vinod Crazy
                 if(M_AXI_ARREADY = '1') then
                     if(M_AXI_RVALID = '1') then
                         StateNext   <= sREAD_DONE ;
@@ -224,10 +227,8 @@ begin
                 else
                     StateNext   <= sARVALID ;
                 end if;
-                -- Ends here
           elsif (iAvalonWrite = '1') then
                 StateNext   <= sAWVALID ;
-                --Vinod Crazy
                 if(M_AXI_AWREADY = '1') then
                     if (M_AXI_WREADY = '1') then
                         if (M_AXI_BVALID = '1') then
@@ -241,7 +242,6 @@ begin
                 else
                     StateNext   <= sAWVALID ;
                 end if;
-                --Craze ends here
             else
                 StateNext <= sINIT ;
             end if;
