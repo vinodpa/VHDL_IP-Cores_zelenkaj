@@ -554,13 +554,14 @@ begin
         );
 
         -- Added for Xilinx Design
+        -- '1' for In '0' for Out
         hostData_i <= coe_parHost_data_I ;
         coe_parHost_data_O <= hostData_o ;
-        coe_parHost_data_T <= hostData_en ;
+        coe_parHost_data_T <= not hostData_en ;
         -- Added for Xilinx Design
         hostAddressData_i <= coe_parHost_addressData_I ;
         coe_parHost_addressData_O <= hostAddressData_o ;
-        coe_parHost_addressData_T <= hostAddressData_en ;
+        coe_parHost_addressData_T <= not hostAddressData_en ;
 
 end generate;
 
