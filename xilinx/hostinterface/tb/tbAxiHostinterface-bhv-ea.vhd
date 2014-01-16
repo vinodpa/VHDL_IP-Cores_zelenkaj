@@ -606,7 +606,71 @@ end generate ;
 --  Parallel Interface for Hsot
 -------------------------------------------------------------------------
 genParallelMaster : if cHostIfType = cTrue generate
---TODO: Add Parallel Master to based Simulation
+--! Parallel Word address
+signal   parallel_Wordaddress  : std_logic_vector (31 downto 0) ;
+
+begin
+--! Parallel Interface Master
+PARALLEL_INTERFACE_MASTER : entity work.parallelMaster
+        generic map (
+            gDataWidth                 => cParallelDataWidth,
+            gMultiplex                 => cFalse
+        )
+        port map (
+            iClk                       => clock,
+            iRst                       => inst_hostBusMaster.BusMasterReset,
+            -- Avalon Interface
+            iAvalonRead                => inst_hostBusMaster.AvalonRead,
+            iAvalonWrite               => inst_hostBusMaster.AvalonWrite,
+            iAvalonAddr                => parallel_Wordaddress,
+            iAvalonBE                  => inst_hostBusMaster.AvalonBE,
+            oAvalonWaitReq             => inst_hostBusMaster.AvalonWaitReq,
+            oAvalonReadValid           => inst_hostBusMaster.AvalonReadValid,
+            oAvalonReadData            => inst_hostBusMaster.AvalonReadData,
+            iAvalonWriteData           => inst_hostBusMaster.AvalonWriteData,
+            -- Parallel Interface
+            oParHostChipselect         => coe_parHost_chipselect,
+            oParHostRead               => coe_parHost_read,
+            oParHostWrite              => coe_parHost_write,
+            oParHostAddressLatchEnable => coe_parHost_addressLatchEnable,
+            iParHostAcknowledge        => coe_parHost_acknowledge,
+            oParHostByteenable         => coe_parHost_byteenable,
+            oParHostAddress            => coe_parHost_address,
+            iParHostData               => coe_parHost_data_O,
+            oParHostData               => coe_parHost_data_I,
+            iParHostDataEnable         => coe_parHost_data_T,
+            iParHostAddressData        => coe_parHost_addressData_O,
+            oParHostAddressData        => coe_parHost_addressData_I,
+            iParHostAddressDataEnable  => coe_parHost_addressData_T
+        );
+--! BusMaster to read instruction and provide input to Parallel Master model
+AVALON_HOST_BUS_MASTER:entity work.busMaster
+    generic map (
+        gAddrWidth          => C_AXI_ADDR_WIDTH,
+        gDataWidth          => C_AXI_DATA_WIDTH,
+        gStimuliFile        => cHostStimuliFile
+     )
+    port map (
+        iRst                =>  inst_hostBusMaster.BusMasterReset,
+        iClk                =>  clock,
+        iEnable             =>  inst_hostBusMaster.BusMasterEnable,
+        iAck                =>  inst_hostBusMaster.BusMasterAck,
+        iReaddata           =>  inst_hostBusMaster.AvalonReadData,
+        oWrite              =>  inst_hostBusMaster.AvalonWrite,
+        oRead               =>  inst_hostBusMaster.AvalonRead,
+        oSelect             =>  inst_hostBusMaster.BusMasterSelect,
+        oAddress            =>  inst_hostBusMaster.AvalonAddr,
+        oByteenable         =>  inst_hostBusMaster.AvalonBE,
+        oWritedata          =>  inst_hostBusMaster.AvalonWriteData,
+        oError              =>  inst_hostBusMaster.BusMasterError,
+        oDone               =>  inst_hostBusMaster.BusMasterDone
+    );
+    --hBusMasterReset <= not nAreset ;
+    inst_hostBusMaster.BusMasterReset  <= inst_hostBusMaster.BusMasterDone ;
+    inst_hostBusMaster.BusMasterEnable <= cActivated ;
+    inst_hostBusMaster.BusMasterAck    <= not inst_hostBusMaster.AvalonWaitReq ;
+    parallel_Wordaddress <= '0' & inst_hostBusMaster.AvalonAddr (31 downto 1) ;
+
 end generate;
 
 -------------------------------------------------------------------------------
