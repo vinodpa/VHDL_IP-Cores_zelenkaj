@@ -278,7 +278,7 @@ CombFSM:process (
                            oParHostData       <= WDataM;
                          end if;
                         --Keep it same for atleast 3 clock cycles
-                        if( countT = x"2") then
+                        if( countT = x"3") then
                             if(iParHostAcknowledge = cActivated) then
                                 countT  <= x"0" ;
                                 tStateNext  <= sIDLE ;
@@ -353,7 +353,7 @@ CombFSM:process (
                            RDataM             <= iParHostData;
                          end if;
 
-                        if( countT = x"2") then
+                        if( countT = x"3") then
                           if(iParHostAcknowledge = cActivated and
                             (not iParHostDataEnable = cActivated)) then
 
